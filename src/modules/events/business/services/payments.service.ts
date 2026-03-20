@@ -1,4 +1,10 @@
-import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import type { PaymentsRepository } from '../repositories/payments.repository';
 import type { PaymentsValidator } from '../repositories/payments.validator';
 import type { EventsRepository } from '../repositories/events.repository';
@@ -30,7 +36,10 @@ export class PaymentsService {
     private readonly paymentGateway: PaymentGateway,
   ) {}
 
-  async create(registrationId: string, user: IUser): Promise<{ payment: IPayment; clientSecret: string }> {
+  async create(
+    registrationId: string,
+    user: IUser,
+  ): Promise<{ payment: IPayment; clientSecret: string }> {
     await this.paymentValidator.validatePaymentNotDuplicated(registrationId);
 
     const registration = await this.registrationRepo.findOne(registrationId);
@@ -46,16 +55,17 @@ export class PaymentsService {
       paymentMethod: 'stripe',
     });
 
-    const { clientSecret, intentId } = await this.paymentGateway.createPaymentIntent({
-      amount: Math.round(event.price! * 100),
-      currency: event.currency!,
-      metadata: {
-        paymentId: payment.id!,
-        eventId: event.id!,
-        userId: user.id!,
-        registrationId,
-      },
-    });
+    const { clientSecret, intentId } =
+      await this.paymentGateway.createPaymentIntent({
+        amount: Math.round(event.price! * 100),
+        currency: event.currency!,
+        metadata: {
+          paymentId: payment.id!,
+          eventId: event.id!,
+          userId: user.id!,
+          registrationId,
+        },
+      });
 
     const updatedPayment = await this.paymentRepo.updateStatus(
       payment.id!,
@@ -87,21 +97,33 @@ export class PaymentsService {
     const event = await this.eventRepo.findOne(eventId);
 
     if (event.organizerId !== user.id) {
-      throw new BadRequestException('Solo el organizador puede ver los pagos del evento');
+      throw new BadRequestException(
+        'Solo el organizador puede ver los pagos del evento',
+      );
     }
 
     return await this.paymentRepo.findByEvent(eventId, limit, offset);
   }
 
-  async markAsPaid(id: string, transactionRef: string, user: IUser): Promise<IPayment> {
+  async markAsPaid(
+    id: string,
+    transactionRef: string,
+    user: IUser,
+  ): Promise<IPayment> {
     const payment = await this.paymentRepo.findOne(id);
     const event = await this.eventRepo.findOne(payment.eventId);
 
     if (event.organizerId !== user.id) {
-      throw new BadRequestException('Solo el organizador del evento puede marcar pagos como pagados');
+      throw new BadRequestException(
+        'Solo el organizador del evento puede marcar pagos como pagados',
+      );
     }
 
-    return await this.paymentRepo.updateStatus(id, PaymentStatus.PAID, transactionRef);
+    return await this.paymentRepo.updateStatus(
+      id,
+      PaymentStatus.PAID,
+      transactionRef,
+    );
   }
 
   async cancelPayment(id: string, user: IUser): Promise<IPayment> {
@@ -117,11 +139,15 @@ export class PaymentsService {
     const event = await this.eventRepo.findOne(payment.eventId);
 
     if (event.organizerId !== user.id) {
-      throw new BadRequestException('Solo el organizador del evento puede reembolsar pagos');
+      throw new BadRequestException(
+        'Solo el organizador del evento puede reembolsar pagos',
+      );
     }
 
     if (!payment.transactionRef) {
-      throw new BadRequestException('El pago no tiene referencia de transaccion para reembolsar');
+      throw new BadRequestException(
+        'El pago no tiene referencia de transaccion para reembolsar',
+      );
     }
 
     await this.paymentGateway.refundPayment(payment.transactionRef);

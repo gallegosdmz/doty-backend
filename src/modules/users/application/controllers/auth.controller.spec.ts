@@ -119,7 +119,12 @@ describe('AuthController', () => {
     it('should return refreshed auth data', async () => {
       mockAuthService.checkAuthStatus.mockResolvedValue(mockAuthResponse);
 
-      const user = { id: 'user-uuid-1', firstName: 'Juan', lastName: 'Perez', phone: '+5211234567890' } as any;
+      const user = {
+        id: 'user-uuid-1',
+        firstName: 'Juan',
+        lastName: 'Perez',
+        phone: '+5211234567890',
+      } as any;
       const result = await controller.checkAuthStatus(user);
 
       expect(result.token).toBeDefined();
@@ -133,12 +138,21 @@ describe('AuthController', () => {
     it('should change password and return new token', async () => {
       mockAuthService.changePassword.mockResolvedValue({ token: 'new-token' });
 
-      const user = { id: 'user-uuid-1', firstName: 'Juan', lastName: 'Perez', phone: '+5211234567890' } as any;
+      const user = {
+        id: 'user-uuid-1',
+        firstName: 'Juan',
+        lastName: 'Perez',
+        phone: '+5211234567890',
+      } as any;
       const dto = { password: 'newPassword123' };
       const result = await controller.changePassword('user-uuid-1', dto, user);
 
       expect(result.token).toBe('new-token');
-      expect(mockAuthService.changePassword).toHaveBeenCalledWith('user-uuid-1', dto, user);
+      expect(mockAuthService.changePassword).toHaveBeenCalledWith(
+        'user-uuid-1',
+        dto,
+        user,
+      );
     });
   });
 
@@ -159,12 +173,17 @@ describe('AuthController', () => {
 
   describe('verifyOtp', () => {
     it('should verify OTP code', async () => {
-      mockAuthService.verifyOtp.mockResolvedValue({ message: 'Teléfono verificado correctamente' });
+      mockAuthService.verifyOtp.mockResolvedValue({
+        message: 'Teléfono verificado correctamente',
+      });
 
       const result = await controller.verifyOtp('+5211234567890', '123456');
 
       expect(result.message).toBe('Teléfono verificado correctamente');
-      expect(mockAuthService.verifyOtp).toHaveBeenCalledWith('+5211234567890', '123456');
+      expect(mockAuthService.verifyOtp).toHaveBeenCalledWith(
+        '+5211234567890',
+        '123456',
+      );
     });
 
     it('should fail with invalid OTP code', async () => {

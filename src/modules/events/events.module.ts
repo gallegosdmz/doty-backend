@@ -77,6 +77,11 @@ import { StripePaymentGatewayImpl } from './external-system/repositories/stripe-
       useClass: StripePaymentGatewayImpl,
     },
   ],
-  exports: [EventsService, RegistrationsService, PaymentsService, TicketsService],
+  exports: [
+    EventsService,
+    RegistrationsService,
+    PaymentsService,
+    TicketsService,
+  ],
 })
 export class EventsModule {}

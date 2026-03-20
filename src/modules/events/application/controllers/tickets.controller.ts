@@ -38,19 +38,13 @@ export class TicketsController {
 
   @Patch('validate/:code')
   @Auth()
-  validate(
-    @Param('code') code: string,
-    @GetUser() user: IUser,
-  ) {
+  validate(@Param('code') code: string, @GetUser() user: IUser) {
     return this.ticketsService.validate(code, user);
   }
 
   @Delete(':id')
   @Auth()
-  remove(
-    @Param('id', ParseUUIDPipe) id: string,
-    @GetUser() user: IUser,
-  ) {
+  remove(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: IUser) {
     return this.ticketsService.remove(id, user);
   }
 }

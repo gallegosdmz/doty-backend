@@ -22,5 +22,4 @@ export const envValidationSchema = Joi.object({
 
   // App
   PORT: Joi.number().default(3000),
-
 });

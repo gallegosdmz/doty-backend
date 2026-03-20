@@ -65,7 +65,11 @@ export class PaymentsController {
     @Body() markPaidDto: MarkPaidDto,
     @GetUser() user: IUser,
   ) {
-    return this.paymentsService.markAsPaid(id, markPaidDto.transactionRef, user);
+    return this.paymentsService.markAsPaid(
+      id,
+      markPaidDto.transactionRef,
+      user,
+    );
   }
 
   @Patch(':id/cancel')
@@ -79,19 +83,13 @@ export class PaymentsController {
 
   @Patch(':id/refund')
   @Auth()
-  refund(
-    @Param('id', ParseUUIDPipe) id: string,
-    @GetUser() user: IUser,
-  ) {
+  refund(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: IUser) {
     return this.paymentsService.refund(id, user);
   }
 
   @Delete(':id')
   @Auth()
-  remove(
-    @Param('id', ParseUUIDPipe) id: string,
-    @GetUser() user: IUser,
-  ) {
+  remove(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: IUser) {
     return this.paymentsService.remove(id, user);
   }
 }

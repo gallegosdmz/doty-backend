@@ -1,13 +1,20 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { AuthRepository } from "../../business/repositories/auth.repository";
-import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "../entities/user.entity";
-import { Repository } from "typeorm";
-import { IAuth, IUser } from "../../business/entities";
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { AuthRepository } from '../../business/repositories/auth.repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../entities/user.entity';
+import { Repository } from 'typeorm';
+import { IAuth, IUser } from '../../business/entities';
 
 import * as bcrypt from 'bcrypt';
-import { JwtPayload } from "src/shared/interfaces/Jwt-payload.interface";
+import { JwtPayload } from 'src/shared/interfaces/Jwt-payload.interface';
 
 @Injectable()
 export class AuthRepositoryImpl implements AuthRepository {
@@ -22,7 +29,17 @@ export class AuthRepositoryImpl implements AuthRepository {
   async login(phone: string, password: string): Promise<IAuth> {
     const user = await this.userRepo.findOne({
       where: { phone },
-      select: { id: true, firstName: true, lastName: true, phone: true, email: true, password: true, isVerified: true, isPhoneVerified: true, isDeleted: true },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        email: true,
+        password: true,
+        isVerified: true,
+        isPhoneVerified: true,
+        isDeleted: true,
+      },
     });
 
     if (!user) throw new UnauthorizedException('No existe el correo');
@@ -42,8 +59,9 @@ export class AuthRepositoryImpl implements AuthRepository {
       phone: data.phone,
       isVerified: data.isVerified,
       isPhoneVerified: data.isPhoneVerified,
-      token: this.getJwtToken({ id: user.id })
-    }
+      id: user.id,
+      token: this.getJwtToken({ id: user.id }),
+    };
   }
 
   async checkAuthStatus(user: IUser): Promise<IAuth> {
@@ -51,24 +69,26 @@ export class AuthRepositoryImpl implements AuthRepository {
 
     return {
       ...user,
-      token: this.getJwtToken({ id: user.id })
-    }
+      id: user.id,
+      token: this.getJwtToken({ id: user.id }),
+    } as IAuth;
   }
 
   async changePassword(
     userId: string,
-    password: string
+    password: string,
   ): Promise<{ token: string }> {
     try {
       await this.userRepo.update(userId, { password });
 
       return {
-        token: this.getJwtToken({ id: userId })
-      }
-
+        token: this.getJwtToken({ id: userId }),
+      };
     } catch (e) {
       this.logger.error(`Error en changePassword`);
-      throw new InternalServerErrorException('Error al intentar cambiar la password');
+      throw new InternalServerErrorException(
+        'Error al intentar cambiar la password',
+      );
     }
   }
 

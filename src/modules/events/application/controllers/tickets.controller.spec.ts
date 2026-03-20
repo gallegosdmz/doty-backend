@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { TicketsController } from './tickets.controller';
 import { TicketsService } from '../../business/services/tickets.service';
 import { ITicket } from '../../business/entities';
@@ -36,9 +40,7 @@ describe('TicketsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TicketsController],
-      providers: [
-        { provide: TicketsService, useValue: mockTicketsService },
-      ],
+      providers: [{ provide: TicketsService, useValue: mockTicketsService }],
     }).compile();
 
     controller = module.get<TicketsController>(TicketsController);
@@ -78,10 +80,14 @@ describe('TicketsController', () => {
 
     it('should fail when registration is not approved', async () => {
       mockTicketsService.generate.mockRejectedValue(
-        new BadRequestException('Solo se pueden generar tickets para inscripciones aprobadas'),
+        new BadRequestException(
+          'Solo se pueden generar tickets para inscripciones aprobadas',
+        ),
       );
 
-      await expect(controller.generate('reg-uuid-1')).rejects.toThrow(BadRequestException);
+      await expect(controller.generate('reg-uuid-1')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should fail when registration does not exist', async () => {
@@ -89,7 +95,9 @@ describe('TicketsController', () => {
         new NotFoundException('La inscripcion no fue encontrada'),
       );
 
-      await expect(controller.generate('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(controller.generate('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -110,7 +118,9 @@ describe('TicketsController', () => {
         new NotFoundException('El ticket no fue encontrado'),
       );
 
-      await expect(controller.findOne('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(controller.findOne('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -132,7 +142,9 @@ describe('TicketsController', () => {
         new NotFoundException('El ticket no fue encontrado'),
       );
 
-      await expect(controller.findByCode('INVALID-CODE')).rejects.toThrow(NotFoundException);
+      await expect(controller.findByCode('INVALID-CODE')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -151,7 +163,10 @@ describe('TicketsController', () => {
 
       expect(result.isUsed).toBe(true);
       expect(result.usedAt).toBeDefined();
-      expect(service.validate).toHaveBeenCalledWith('ABC123DEF456', mockOrganizer);
+      expect(service.validate).toHaveBeenCalledWith(
+        'ABC123DEF456',
+        mockOrganizer,
+      );
     });
 
     it('should fail when ticket was already used', async () => {
@@ -191,12 +206,19 @@ describe('TicketsController', () => {
 
   describe('remove', () => {
     it('should soft-delete a ticket', async () => {
-      mockTicketsService.remove.mockResolvedValue({ message: 'El ticket fue eliminado exitosamente' });
+      mockTicketsService.remove.mockResolvedValue({
+        message: 'El ticket fue eliminado exitosamente',
+      });
 
       const result = await controller.remove('ticket-uuid-1', mockOrganizer);
 
-      expect(result).toEqual({ message: 'El ticket fue eliminado exitosamente' });
-      expect(service.remove).toHaveBeenCalledWith('ticket-uuid-1', mockOrganizer);
+      expect(result).toEqual({
+        message: 'El ticket fue eliminado exitosamente',
+      });
+      expect(service.remove).toHaveBeenCalledWith(
+        'ticket-uuid-1',
+        mockOrganizer,
+      );
     });
 
     it('should fail when ticket does not exist', async () => {
@@ -204,7 +226,9 @@ describe('TicketsController', () => {
         new NotFoundException('El ticket no fue encontrado'),
       );
 
-      await expect(controller.remove('non-existent', mockOrganizer)).rejects.toThrow(NotFoundException);
+      await expect(
+        controller.remove('non-existent', mockOrganizer),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

@@ -1,4 +1,10 @@
-import { Injectable, Logger, InternalServerErrorException, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  InternalServerErrorException,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket } from '../entities/ticket.entity';
@@ -17,13 +23,18 @@ export class TicketsRepositoryImpl implements TicketsRepository {
 
   async create(registrationId: string): Promise<ITicket> {
     try {
-      const code = randomUUID().replace(/-/g, '').substring(0, 12).toUpperCase();
+      const code = randomUUID()
+        .replace(/-/g, '')
+        .substring(0, 12)
+        .toUpperCase();
 
       const entity = this.ticketRepo.create({ registrationId, code });
       return await this.ticketRepo.save(entity);
     } catch (e) {
       this.logger.error('Error en create ticket', e);
-      throw new InternalServerErrorException('Error al intentar crear el ticket');
+      throw new InternalServerErrorException(
+        'Error al intentar crear el ticket',
+      );
     }
   }
 
@@ -69,7 +80,9 @@ export class TicketsRepositoryImpl implements TicketsRepository {
       return await this.ticketRepo.save(ticket);
     } catch (e) {
       this.logger.error('Error en validateTicket', e);
-      throw new InternalServerErrorException('Error al intentar validar el ticket');
+      throw new InternalServerErrorException(
+        'Error al intentar validar el ticket',
+      );
     }
   }
 
@@ -81,7 +94,9 @@ export class TicketsRepositoryImpl implements TicketsRepository {
       return { message: 'El ticket fue eliminado exitosamente' };
     } catch (e) {
       this.logger.error('Error en remove ticket', e);
-      throw new InternalServerErrorException('Error al intentar eliminar el ticket');
+      throw new InternalServerErrorException(
+        'Error al intentar eliminar el ticket',
+      );
     }
   }
 }

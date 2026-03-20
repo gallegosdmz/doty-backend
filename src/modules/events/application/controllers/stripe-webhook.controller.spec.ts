@@ -16,9 +16,7 @@ describe('StripeWebhookController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [StripeWebhookController],
-      providers: [
-        { provide: PaymentsService, useValue: mockPaymentsService },
-      ],
+      providers: [{ provide: PaymentsService, useValue: mockPaymentsService }],
     }).compile();
 
     controller = module.get<StripeWebhookController>(StripeWebhookController);
@@ -42,13 +40,20 @@ describe('StripeWebhookController', () => {
         type: 'payment_intent.succeeded',
         data: { object: { id: 'pi_test123' } },
       });
-      mockPaymentsService.handlePaymentIntentSucceeded.mockResolvedValue(undefined);
+      mockPaymentsService.handlePaymentIntentSucceeded.mockResolvedValue(
+        undefined,
+      );
 
       const result = await controller.handleWebhook(signature, rawBody);
 
       expect(result).toEqual({ received: true });
-      expect(service.verifyWebhookSignature).toHaveBeenCalledWith(rawBody, signature);
-      expect(service.handlePaymentIntentSucceeded).toHaveBeenCalledWith('pi_test123');
+      expect(service.verifyWebhookSignature).toHaveBeenCalledWith(
+        rawBody,
+        signature,
+      );
+      expect(service.handlePaymentIntentSucceeded).toHaveBeenCalledWith(
+        'pi_test123',
+      );
       expect(service.handlePaymentIntentFailed).not.toHaveBeenCalled();
     });
 
@@ -57,12 +62,16 @@ describe('StripeWebhookController', () => {
         type: 'payment_intent.payment_failed',
         data: { object: { id: 'pi_test456' } },
       });
-      mockPaymentsService.handlePaymentIntentFailed.mockResolvedValue(undefined);
+      mockPaymentsService.handlePaymentIntentFailed.mockResolvedValue(
+        undefined,
+      );
 
       const result = await controller.handleWebhook(signature, rawBody);
 
       expect(result).toEqual({ received: true });
-      expect(service.handlePaymentIntentFailed).toHaveBeenCalledWith('pi_test456');
+      expect(service.handlePaymentIntentFailed).toHaveBeenCalledWith(
+        'pi_test456',
+      );
       expect(service.handlePaymentIntentSucceeded).not.toHaveBeenCalled();
     });
 

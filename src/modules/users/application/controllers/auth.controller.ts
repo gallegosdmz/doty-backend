@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { AuthService } from '../../business/services/auth.service';
 import { UsersService } from '../../business/services/users.service';
 import { LoginUserDto } from '../dto/login-user.dto';
@@ -57,10 +50,17 @@ export class AuthController {
   }
 
   @Post('verify-otp')
-  verifyOtp(
-    @Body('phone') phone: string,
-    @Body('code') code: string,
-  ) {
+  verifyOtp(@Body('phone') phone: string, @Body('code') code: string) {
     return this.authService.verifyOtp(phone, code);
+  }
+
+  @Post('send-email-otp')
+  sendEmailOtp(@Body('email') email: string) {
+    return this.authService.sendEmailOtp(email);
+  }
+
+  @Post('verify-email-otp')
+  verifyEmailOtp(@Body('email') email: string, @Body('code') code: string) {
+    return this.authService.verifyEmailOtp(email, code);
   }
 }

@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('users')
 export class User {
@@ -10,7 +16,7 @@ export class User {
 
   @Column('varchar', { length: 20, unique: true })
   phone: string;
-  
+
   @Column('varchar', { length: 254, select: false })
   password: string;
 
@@ -34,7 +40,7 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
-  
+
   @Column({ default: false })
   isDeleted: boolean;
 }

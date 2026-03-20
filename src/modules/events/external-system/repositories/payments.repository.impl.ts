@@ -1,4 +1,9 @@
-import { Injectable, Logger, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Payment } from '../entities/payment.entity';
@@ -67,7 +72,9 @@ export class PaymentsRepositoryImpl implements PaymentsRepository {
       };
     } catch (e) {
       this.logger.error('Error en findByUser payments', e);
-      throw new InternalServerErrorException('Error al intentar obtener los pagos del usuario');
+      throw new InternalServerErrorException(
+        'Error al intentar obtener los pagos del usuario',
+      );
     }
   }
 
@@ -96,11 +103,17 @@ export class PaymentsRepositoryImpl implements PaymentsRepository {
       };
     } catch (e) {
       this.logger.error('Error en findByEvent payments', e);
-      throw new InternalServerErrorException('Error al intentar obtener los pagos del evento');
+      throw new InternalServerErrorException(
+        'Error al intentar obtener los pagos del evento',
+      );
     }
   }
 
-  async updateStatus(id: string, status: PaymentStatus, transactionRef?: string): Promise<IPayment> {
+  async updateStatus(
+    id: string,
+    status: PaymentStatus,
+    transactionRef?: string,
+  ): Promise<IPayment> {
     const payment = await this.paymentRepo.preload({
       id,
       status,
@@ -113,7 +126,9 @@ export class PaymentsRepositoryImpl implements PaymentsRepository {
       return await this.paymentRepo.save(payment);
     } catch (e) {
       this.logger.error('Error en updateStatus payment', e);
-      throw new InternalServerErrorException('Error al intentar actualizar el pago');
+      throw new InternalServerErrorException(
+        'Error al intentar actualizar el pago',
+      );
     }
   }
 
@@ -132,7 +147,9 @@ export class PaymentsRepositoryImpl implements PaymentsRepository {
       return { message: 'El pago fue eliminado exitosamente' };
     } catch (e) {
       this.logger.error('Error en remove payment', e);
-      throw new InternalServerErrorException('Error al intentar eliminar el pago');
+      throw new InternalServerErrorException(
+        'Error al intentar eliminar el pago',
+      );
     }
   }
 }

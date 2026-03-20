@@ -43,10 +43,7 @@ export class UsersController {
 
   @Delete(':id')
   @Auth()
-  remove(
-    @Param('id', ParseUUIDPipe) id: string,
-    @GetUser() user: IUser,
-  ) {
+  remove(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: IUser) {
     return this.usersService.remove(id, user);
   }
 }

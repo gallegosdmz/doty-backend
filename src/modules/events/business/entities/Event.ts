@@ -1,4 +1,9 @@
-import { AccessMode, AdmissionType, EventStatus, EventType } from '../../../../shared/enums';
+import {
+  AccessMode,
+  AdmissionType,
+  EventStatus,
+  EventType,
+} from '../../../../shared/enums';
 
 export interface IEvent {
   id?: string;
@@ -18,6 +23,7 @@ export interface IEvent {
   startsAt: Date;
   endsAt: Date;
   status?: EventStatus;
+  coverImageUrl?: string | null;
   metadata?: Record<string, any> | null;
   createdAt?: Date;
   updatedAt?: Date;

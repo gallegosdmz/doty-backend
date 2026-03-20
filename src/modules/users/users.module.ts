@@ -58,4 +58,4 @@ import { OtpRepositoryImpl } from './external-system/repositories/otp.repository
   ],
   exports: [PassportModule, JwtModule, JwtStrategy, UsersService, AuthService],
 })
-export class UsersModule { }
+export class UsersModule {}

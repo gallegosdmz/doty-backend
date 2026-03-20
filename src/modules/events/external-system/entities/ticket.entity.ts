@@ -37,7 +37,9 @@ export class Ticket {
   @Column({ default: false })
   isDeleted: boolean;
 
-  @OneToOne(() => EventRegistration, (registration) => registration.ticket, { onDelete: 'CASCADE' })
+  @OneToOne(() => EventRegistration, (registration) => registration.ticket, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'registrationId' })
   registration: EventRegistration;
 }

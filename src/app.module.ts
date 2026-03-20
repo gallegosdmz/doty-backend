@@ -1,15 +1,22 @@
+import { join } from 'path';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventsModule } from './modules/events/events.module';
 import { UsersModule } from './modules/users/users.module';
 import { HealthController } from './modules/health/health.controller';
 import { envValidationSchema } from './config/env.validation';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       validationSchema: envValidationSchema,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
     }),
 
     TypeOrmModule.forRootAsync({
@@ -29,6 +36,7 @@ import { envValidationSchema } from './config/env.validation';
 
     UsersModule,
     EventsModule,
+    MailModule,
   ],
   controllers: [HealthController],
   providers: [],

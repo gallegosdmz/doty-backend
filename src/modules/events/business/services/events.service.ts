@@ -1,10 +1,13 @@
-import { Inject, Injectable } from "@nestjs/common";
-import type { EventsFilters, EventsRepository } from "../repositories/events.repository";
-import type { EventsValidator } from "../repositories/events.validator";
-import { IEvent } from "../entities";
-import { IUser } from "src/modules/users/business/entities";
-import { AdmissionType, EventStatus } from "src/shared/enums";
-import { IMeta } from "src/shared/interfaces/Meta";
+import { Inject, Injectable } from '@nestjs/common';
+import type {
+  EventsFilters,
+  EventsRepository,
+} from '../repositories/events.repository';
+import type { EventsValidator } from '../repositories/events.validator';
+import { IEvent } from '../entities';
+import { IUser } from 'src/modules/users/business/entities';
+import { AdmissionType, EventStatus } from 'src/shared/enums';
+import { IMeta } from 'src/shared/interfaces/Meta';
 
 @Injectable()
 export class EventsService {
@@ -17,11 +20,14 @@ export class EventsService {
   ) {}
 
   async create(eventData: Partial<IEvent>, organizer: IUser): Promise<IEvent> {
-    this.eventValidator.validateEventDates(eventData.startsAt!, eventData.endsAt!);
+    this.eventValidator.validateEventDates(
+      eventData.startsAt!,
+      eventData.endsAt!,
+    );
     this.eventValidator.validatePriceForPaidEvent(eventData);
 
     const event: IEvent = {
-      ...eventData as IEvent,
+      ...(eventData as IEvent),
       organizerId: organizer.id!,
       status: EventStatus.DRAFT,
       admissionType: eventData.admissionType ?? AdmissionType.DIRECT,
@@ -47,7 +53,14 @@ export class EventsService {
     limit: number = 10,
     offset: number = 0,
   ): Promise<{ events: IEvent[]; meta: IMeta }> {
-    return await this.eventRepo.findNearby(latitude, longitude, radiusKm, filters, limit, offset);
+    return await this.eventRepo.findNearby(
+      latitude,
+      longitude,
+      radiusKm,
+      filters,
+      limit,
+      offset,
+    );
   }
 
   async findOne(id: string): Promise<IEvent> {
@@ -62,7 +75,11 @@ export class EventsService {
     return this.eventRepo.findByOrganizer(organizerId, limit, offset);
   }
 
-  async update(id: string, data: Partial<IEvent>, organizer: IUser): Promise<IEvent> {
+  async update(
+    id: string,
+    data: Partial<IEvent>,
+    organizer: IUser,
+  ): Promise<IEvent> {
     await this.eventValidator.validateOrganizer(id, organizer.id!);
     await this.eventValidator.validateEventNotCancelled(id);
 
@@ -100,5 +117,14 @@ export class EventsService {
     await this.eventValidator.validateOrganizer(id, organizer.id!);
 
     return this.eventRepo.remove(id);
+  }
+
+  async updateCover(
+    id: string,
+    coverImageUrl: string,
+    organizer: IUser,
+  ): Promise<IEvent> {
+    await this.eventValidator.validateOrganizer(id, organizer.id!);
+    return await this.eventRepo.update(id, { coverImageUrl });
   }
 }

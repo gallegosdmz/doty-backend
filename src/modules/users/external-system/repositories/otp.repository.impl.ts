@@ -1,7 +1,12 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
-import { OtpRepository } from "../../business/repositories/otp.repository";
-import { Twilio } from "twilio";
-import { ConfigService } from "@nestjs/config";
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
+import { OtpRepository } from '../../business/repositories/otp.repository';
+import { Twilio } from 'twilio';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class OtpRepositoryImpl implements OtpRepository {
@@ -10,14 +15,18 @@ export class OtpRepositoryImpl implements OtpRepository {
   private readonly logger = new Logger(OtpRepositoryImpl.name);
 
   constructor(private readonly configService: ConfigService) {
-    const accountSid = this.configService.getOrThrow<string>('TWILIO_ACCOUNT_SID');
-    const authToken = this.configService.getOrThrow<string>('TWILIO_AUTH_TOKEN');
-    this.serviceSid = this.configService.getOrThrow<string>('TWILIO_VERIFY_SERVICE_SID');
+    const accountSid =
+      this.configService.getOrThrow<string>('TWILIO_ACCOUNT_SID');
+    const authToken =
+      this.configService.getOrThrow<string>('TWILIO_AUTH_TOKEN');
+    this.serviceSid = this.configService.getOrThrow<string>(
+      'TWILIO_VERIFY_SERVICE_SID',
+    );
 
     this.client = new Twilio(accountSid, authToken);
   }
 
-  async sendOtp(phone: string): Promise<{ message: string; }> {
+  async sendOtp(phone: string): Promise<{ message: string }> {
     try {
       await this.client.verify.v2
         .services(this.serviceSid)
@@ -29,11 +38,13 @@ export class OtpRepositoryImpl implements OtpRepository {
       return { message: 'Codigo de verificación enviado' };
     } catch (error) {
       this.logger.error(`Error enviando OTP a ${phone}`, error);
-      throw new InternalServerErrorException('Error al enviar el código de verificación');
+      throw new InternalServerErrorException(
+        'Error al enviar el código de verificación',
+      );
     }
   }
 
-  async verifyOtp(phone: string, code: string): Promise<{ verified: boolean; }> {
+  async verifyOtp(phone: string, code: string): Promise<{ verified: boolean }> {
     try {
       const verification = await this.client.verify.v2
         .services(this.serviceSid)
@@ -43,7 +54,9 @@ export class OtpRepositoryImpl implements OtpRepository {
         });
 
       if (verification.status !== 'approved')
-        throw new BadRequestException('Código de verificación inválido o expirado');
+        throw new BadRequestException(
+          'Código de verificación inválido o expirado',
+        );
 
       return { verified: true };
     } catch (error) {

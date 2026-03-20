@@ -27,9 +27,7 @@ describe('UsersController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [
-        { provide: UsersService, useValue: mockUsersService },
-      ],
+      providers: [{ provide: UsersService, useValue: mockUsersService }],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
@@ -74,7 +72,9 @@ describe('UsersController', () => {
         new NotFoundException('This user is not register'),
       );
 
-      await expect(controller.findOne('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(controller.findOne('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -94,7 +94,9 @@ describe('UsersController', () => {
 
     it('should fail when user tries to update another user', async () => {
       mockUsersService.update.mockRejectedValue(
-        new UnauthorizedException('No estás autorizado para editar este usuario'),
+        new UnauthorizedException(
+          'No estás autorizado para editar este usuario',
+        ),
       );
 
       const otherUser = { ...mockUser, id: 'other-user' };
@@ -109,7 +111,9 @@ describe('UsersController', () => {
 
   describe('remove', () => {
     it('should soft-delete a user', async () => {
-      mockUsersService.remove.mockResolvedValue({ message: 'This user is removed successfully' });
+      mockUsersService.remove.mockResolvedValue({
+        message: 'This user is removed successfully',
+      });
 
       const result = await controller.remove('user-uuid-1', mockUser);
 
@@ -119,14 +123,16 @@ describe('UsersController', () => {
 
     it('should fail when user tries to delete another user', async () => {
       mockUsersService.remove.mockRejectedValue(
-        new UnauthorizedException('No estás autorizado para editar este usuario'),
+        new UnauthorizedException(
+          'No estás autorizado para editar este usuario',
+        ),
       );
 
       const otherUser = { ...mockUser, id: 'other-user' };
 
-      await expect(
-        controller.remove('user-uuid-1', otherUser),
-      ).rejects.toThrow(UnauthorizedException);
+      await expect(controller.remove('user-uuid-1', otherUser)).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
   });
 });

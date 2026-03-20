@@ -1,4 +1,9 @@
-import { Injectable, Logger, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventRegistration } from '../entities/event-registration.entity';
@@ -22,7 +27,9 @@ export class RegistrationsRepositoryImpl implements RegistrationsRepository {
       return await this.registrationRepo.save(entity);
     } catch (e) {
       this.logger.error('Error en create registration', e);
-      throw new InternalServerErrorException('Error al intentar crear la inscripción');
+      throw new InternalServerErrorException(
+        'Error al intentar crear la inscripción',
+      );
     }
   }
 
@@ -55,7 +62,9 @@ export class RegistrationsRepositoryImpl implements RegistrationsRepository {
       };
     } catch (e) {
       this.logger.error('Error en findByEvent registrations', e);
-      throw new InternalServerErrorException('Error al intentar obtener las inscripciones del evento');
+      throw new InternalServerErrorException(
+        'Error al intentar obtener las inscripciones del evento',
+      );
     }
   }
 
@@ -84,7 +93,9 @@ export class RegistrationsRepositoryImpl implements RegistrationsRepository {
       };
     } catch (e) {
       this.logger.error('Error en findByUser registrations', e);
-      throw new InternalServerErrorException('Error al intentar obtener las inscripciones del usuario');
+      throw new InternalServerErrorException(
+        'Error al intentar obtener las inscripciones del usuario',
+      );
     }
   }
 
@@ -93,32 +104,45 @@ export class RegistrationsRepositoryImpl implements RegistrationsRepository {
       where: { id, isDeleted: false },
       relations: ['event', 'user', 'payment', 'ticket'],
     });
-    if (!registration) throw new NotFoundException('La inscripción no fue encontrada');
+    if (!registration)
+      throw new NotFoundException('La inscripción no fue encontrada');
 
     return registration;
   }
 
-  async findByEventAndUser(eventId: string, userId: string): Promise<IEventRegistration | null> {
+  async findByEventAndUser(
+    eventId: string,
+    userId: string,
+  ): Promise<IEventRegistration | null> {
     return this.registrationRepo.findOne({
       where: { eventId, userId, isDeleted: false },
     });
   }
 
-  async updateStatus(id: string, status: RegistrationStatus): Promise<IEventRegistration> {
+  async updateStatus(
+    id: string,
+    status: RegistrationStatus,
+  ): Promise<IEventRegistration> {
     const registration = await this.registrationRepo.preload({
       id,
       status,
-      resolvedAt: [RegistrationStatus.APPROVED, RegistrationStatus.REJECTED].includes(status)
+      resolvedAt: [
+        RegistrationStatus.APPROVED,
+        RegistrationStatus.REJECTED,
+      ].includes(status)
         ? new Date()
         : undefined,
     });
-    if (!registration) throw new NotFoundException('La inscripción no fue encontrada');
+    if (!registration)
+      throw new NotFoundException('La inscripción no fue encontrada');
 
     try {
       return await this.registrationRepo.save(registration);
     } catch (e) {
       this.logger.error('Error en updateStatus registration', e);
-      throw new InternalServerErrorException('Error al intentar actualizar la inscripción');
+      throw new InternalServerErrorException(
+        'Error al intentar actualizar la inscripción',
+      );
     }
   }
 
@@ -130,11 +154,16 @@ export class RegistrationsRepositoryImpl implements RegistrationsRepository {
       return { message: 'La inscripción fue eliminada exitosamente' };
     } catch (e) {
       this.logger.error('Error en remove registration', e);
-      throw new InternalServerErrorException('Error al intentar eliminar la inscripción');
+      throw new InternalServerErrorException(
+        'Error al intentar eliminar la inscripción',
+      );
     }
   }
 
-  async countByEvent(eventId: string, status?: RegistrationStatus): Promise<number> {
+  async countByEvent(
+    eventId: string,
+    status?: RegistrationStatus,
+  ): Promise<number> {
     const where: Record<string, any> = { eventId, isDeleted: false };
     if (status) where.status = status;
 

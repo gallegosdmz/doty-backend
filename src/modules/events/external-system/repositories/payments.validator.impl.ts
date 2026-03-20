@@ -1,4 +1,9 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Payment } from '../entities/payment.entity';
@@ -24,7 +29,10 @@ export class PaymentsValidatorImpl implements PaymentsValidator {
     return true;
   }
 
-  async validatePaymentBelongsToUser(paymentId: string, userId: string): Promise<boolean> {
+  async validatePaymentBelongsToUser(
+    paymentId: string,
+    userId: string,
+  ): Promise<boolean> {
     const payment = await this.paymentRepo.findOne({
       where: { id: paymentId, isDeleted: false },
     });
@@ -42,7 +50,9 @@ export class PaymentsValidatorImpl implements PaymentsValidator {
     });
     if (!payment) throw new NotFoundException('El pago no fue encontrado');
     if (payment.status !== PaymentStatus.PAID) {
-      throw new BadRequestException('Solo se pueden reembolsar pagos completados');
+      throw new BadRequestException(
+        'Solo se pueden reembolsar pagos completados',
+      );
     }
 
     return true;

@@ -9,7 +9,12 @@ import {
   UpdateDateColumn,
   JoinColumn,
 } from 'typeorm';
-import { AccessMode, AdmissionType, EventStatus, EventType } from '../../../../shared/enums';
+import {
+  AccessMode,
+  AdmissionType,
+  EventStatus,
+  EventType,
+} from '../../../../shared/enums';
 import { User } from '../../../users/external-system/entities/user.entity';
 import { EventRegistration } from './event-registration.entity';
 
@@ -68,6 +73,9 @@ export class Event {
 
   @Column({ type: 'enum', enum: EventStatus, default: EventStatus.DRAFT })
   status: EventStatus;
+
+  @Column('varchar', { length: 500, nullable: true })
+  coverImageUrl: string | null;
 
   @Column('jsonb', { nullable: true })
   metadata: Record<string, any> | null;

@@ -37,7 +37,12 @@ export class RegistrationsController {
     @Query() filterDto: FilterRegistrationsDto,
   ) {
     const { limit = 10, offset = 0, status } = filterDto;
-    return this.registrationsService.findByEvent(eventId, status, limit, offset);
+    return this.registrationsService.findByEvent(
+      eventId,
+      status,
+      limit,
+      offset,
+    );
   }
 
   @Get(':id')
@@ -48,37 +53,25 @@ export class RegistrationsController {
 
   @Patch(':id/approve')
   @Auth()
-  approve(
-    @Param('id', ParseUUIDPipe) id: string,
-    @GetUser() user: IUser,
-  ) {
+  approve(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: IUser) {
     return this.registrationsService.approve(id, user);
   }
 
   @Patch(':id/reject')
   @Auth()
-  reject(
-    @Param('id', ParseUUIDPipe) id: string,
-    @GetUser() user: IUser,
-  ) {
+  reject(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: IUser) {
     return this.registrationsService.reject(id, user);
   }
 
   @Patch(':id/cancel')
   @Auth()
-  cancel(
-    @Param('id', ParseUUIDPipe) id: string,
-    @GetUser() user: IUser,
-  ) {
+  cancel(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: IUser) {
     return this.registrationsService.cancel(id, user);
   }
 
   @Delete(':id')
   @Auth()
-  remove(
-    @Param('id', ParseUUIDPipe) id: string,
-    @GetUser() user: IUser,
-  ) {
+  remove(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: IUser) {
     return this.registrationsService.remove(id, user);
   }
 }

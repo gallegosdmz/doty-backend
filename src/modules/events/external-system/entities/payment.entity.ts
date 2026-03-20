@@ -54,7 +54,9 @@ export class Payment {
   @Column({ default: false })
   isDeleted: boolean;
 
-  @OneToOne(() => EventRegistration, (registration) => registration.payment, { onDelete: 'CASCADE' })
+  @OneToOne(() => EventRegistration, (registration) => registration.payment, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'registrationId' })
   registration: EventRegistration;
 

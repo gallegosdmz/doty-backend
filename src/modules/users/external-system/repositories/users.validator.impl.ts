@@ -20,7 +20,7 @@ export class UsersValidatorImpl implements UsersValidator {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-  ) { }
+  ) {}
 
   /**
    * Valida que un campo específico sea único en la base de datos
@@ -55,7 +55,10 @@ export class UsersValidatorImpl implements UsersValidator {
   }
 
   // Métodos específicos para campos comunes
-  async validateEmailUniqueness(email: string, userId?: string): Promise<boolean> {
+  async validateEmailUniqueness(
+    email: string,
+    userId?: string,
+  ): Promise<boolean> {
     return this.validateFieldUserUniquenes(
       'email',
       email,
@@ -64,7 +67,10 @@ export class UsersValidatorImpl implements UsersValidator {
     );
   }
 
-  async validatePhoneUniqueness(phone: string, userId?: string): Promise<boolean> {
+  async validatePhoneUniqueness(
+    phone: string,
+    userId?: string,
+  ): Promise<boolean> {
     return this.validateFieldUserUniquenes('phone', phone, userId, 'teléfono');
   }
 
@@ -82,9 +88,11 @@ export class UsersValidatorImpl implements UsersValidator {
 
   async validateExistFirstAdmin(): Promise<boolean> {
     const users = await this.userRepo.count();
-    if (users > 0) throw new BadRequestException('The first admin is allowed in the database');
+    if (users > 0)
+      throw new BadRequestException(
+        'The first admin is allowed in the database',
+      );
 
     return false;
   }
-
 }

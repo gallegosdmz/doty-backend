@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PaymentsController } from './payments.controller';
 import { PaymentsService } from '../../business/services/payments.service';
 import { PaymentStatus } from '../../../../shared/enums';
@@ -46,9 +50,7 @@ describe('PaymentsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PaymentsController],
-      providers: [
-        { provide: PaymentsService, useValue: mockPaymentsService },
-      ],
+      providers: [{ provide: PaymentsService, useValue: mockPaymentsService }],
     }).compile();
 
     controller = module.get<PaymentsController>(PaymentsController);
@@ -68,7 +70,11 @@ describe('PaymentsController', () => {
   describe('create', () => {
     it('should create a payment and return clientSecret for Stripe', async () => {
       mockPaymentsService.create.mockResolvedValue({
-        payment: { ...mockPayment, paymentMethod: 'stripe', transactionRef: 'pi_test123' },
+        payment: {
+          ...mockPayment,
+          paymentMethod: 'stripe',
+          transactionRef: 'pi_test123',
+        },
         clientSecret: 'pi_test123_secret_abc',
       });
 
@@ -85,7 +91,9 @@ describe('PaymentsController', () => {
         new BadRequestException('Ya existe un pago para esta inscripcion'),
       );
 
-      await expect(controller.create('reg-uuid-1', mockUser)).rejects.toThrow(BadRequestException);
+      await expect(controller.create('reg-uuid-1', mockUser)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('should derive amount and currency from the event', async () => {
@@ -105,7 +113,10 @@ describe('PaymentsController', () => {
 
   describe('findMyPayments', () => {
     it('should return payments for the authenticated user', async () => {
-      mockPaymentsService.findByUser.mockResolvedValue({ payments: [mockPayment], meta: mockMeta });
+      mockPaymentsService.findByUser.mockResolvedValue({
+        payments: [mockPayment],
+        meta: mockMeta,
+      });
 
       const result = await controller.findMyPayments(mockUser, {});
 
@@ -129,12 +140,20 @@ describe('PaymentsController', () => {
 
   describe('findByEvent', () => {
     it('should return payments for an event', async () => {
-      mockPaymentsService.findByEvent.mockResolvedValue({ payments: [mockPayment], meta: mockMeta });
+      mockPaymentsService.findByEvent.mockResolvedValue({
+        payments: [mockPayment],
+        meta: mockMeta,
+      });
 
       const result = await controller.findByEvent('event-uuid-1', mockUser, {});
 
       expect(result.payments).toHaveLength(1);
-      expect(service.findByEvent).toHaveBeenCalledWith('event-uuid-1', mockUser, 10, 0);
+      expect(service.findByEvent).toHaveBeenCalledWith(
+        'event-uuid-1',
+        mockUser,
+        10,
+        0,
+      );
     });
   });
 
@@ -155,7 +174,9 @@ describe('PaymentsController', () => {
         new NotFoundException('El pago no fue encontrado'),
       );
 
-      await expect(controller.findOne('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(controller.findOne('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -171,12 +192,20 @@ describe('PaymentsController', () => {
       };
       mockPaymentsService.markAsPaid.mockResolvedValue(paid);
 
-      const result = await controller.markAsPaid('pay-uuid-1', { transactionRef: 'TXN-123456' }, mockUser);
+      const result = await controller.markAsPaid(
+        'pay-uuid-1',
+        { transactionRef: 'TXN-123456' },
+        mockUser,
+      );
 
       expect(result.status).toBe(PaymentStatus.PAID);
       expect(result.transactionRef).toBe('TXN-123456');
       expect(result.paidAt).toBeDefined();
-      expect(service.markAsPaid).toHaveBeenCalledWith('pay-uuid-1', 'TXN-123456', mockUser);
+      expect(service.markAsPaid).toHaveBeenCalledWith(
+        'pay-uuid-1',
+        'TXN-123456',
+        mockUser,
+      );
     });
   });
 
@@ -190,7 +219,10 @@ describe('PaymentsController', () => {
       const result = await controller.cancelPayment('pay-uuid-1', mockUser);
 
       expect(result.status).toBe(PaymentStatus.CANCELLED);
-      expect(service.cancelPayment).toHaveBeenCalledWith('pay-uuid-1', mockUser);
+      expect(service.cancelPayment).toHaveBeenCalledWith(
+        'pay-uuid-1',
+        mockUser,
+      );
     });
 
     it('should fail when user does not own the payment', async () => {
@@ -199,7 +231,10 @@ describe('PaymentsController', () => {
       );
 
       await expect(
-        controller.cancelPayment('pay-uuid-1', { ...mockUser, id: 'other-user' }),
+        controller.cancelPayment('pay-uuid-1', {
+          ...mockUser,
+          id: 'other-user',
+        }),
       ).rejects.toThrow(ForbiddenException);
     });
   });
@@ -222,7 +257,9 @@ describe('PaymentsController', () => {
         new BadRequestException('Solo se pueden reembolsar pagos completados'),
       );
 
-      await expect(controller.refund('pay-uuid-1', mockUser)).rejects.toThrow(BadRequestException);
+      await expect(controller.refund('pay-uuid-1', mockUser)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
@@ -230,7 +267,9 @@ describe('PaymentsController', () => {
 
   describe('remove', () => {
     it('should soft-delete a payment', async () => {
-      mockPaymentsService.remove.mockResolvedValue({ message: 'El pago fue eliminado exitosamente' });
+      mockPaymentsService.remove.mockResolvedValue({
+        message: 'El pago fue eliminado exitosamente',
+      });
 
       const result = await controller.remove('pay-uuid-1', mockUser);
 

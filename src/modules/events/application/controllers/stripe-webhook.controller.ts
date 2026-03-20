@@ -36,11 +36,15 @@ export class StripeWebhookController {
 
     switch (event.type) {
       case 'payment_intent.succeeded':
-        await this.paymentsService.handlePaymentIntentSucceeded(event.data.object.id);
+        await this.paymentsService.handlePaymentIntentSucceeded(
+          event.data.object.id,
+        );
         break;
 
       case 'payment_intent.payment_failed':
-        await this.paymentsService.handlePaymentIntentFailed(event.data.object.id);
+        await this.paymentsService.handlePaymentIntentFailed(
+          event.data.object.id,
+        );
         break;
 
       default:

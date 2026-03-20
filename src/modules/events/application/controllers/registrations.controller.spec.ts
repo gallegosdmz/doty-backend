@@ -1,5 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { RegistrationsController } from './registrations.controller';
 import { RegistrationsService } from '../../business/services/registrations.service';
 import { RegistrationStatus } from '../../../../shared/enums';
@@ -70,7 +74,10 @@ describe('RegistrationsController', () => {
 
   describe('register', () => {
     it('should register user to an event', async () => {
-      const approved = { ...mockRegistration, status: RegistrationStatus.APPROVED };
+      const approved = {
+        ...mockRegistration,
+        status: RegistrationStatus.APPROVED,
+      };
       mockRegistrationsService.register.mockResolvedValue(approved);
 
       const result = await controller.register('event-uuid-1', mockUser);
@@ -92,7 +99,9 @@ describe('RegistrationsController', () => {
         new BadRequestException('El evento no esta publicado'),
       );
 
-      await expect(controller.register('event-uuid-1', mockUser)).rejects.toThrow(BadRequestException);
+      await expect(
+        controller.register('event-uuid-1', mockUser),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should fail when event is at full capacity', async () => {
@@ -100,7 +109,9 @@ describe('RegistrationsController', () => {
         new BadRequestException('El evento esta lleno'),
       );
 
-      await expect(controller.register('event-uuid-1', mockUser)).rejects.toThrow(BadRequestException);
+      await expect(
+        controller.register('event-uuid-1', mockUser),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should fail when user is already registered', async () => {
@@ -108,7 +119,9 @@ describe('RegistrationsController', () => {
         new BadRequestException('Ya estas inscrito en este evento'),
       );
 
-      await expect(controller.register('event-uuid-1', mockUser)).rejects.toThrow(BadRequestException);
+      await expect(
+        controller.register('event-uuid-1', mockUser),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -124,7 +137,12 @@ describe('RegistrationsController', () => {
       const result = await controller.findByEvent('event-uuid-1', {});
 
       expect(result.registrations).toHaveLength(1);
-      expect(service.findByEvent).toHaveBeenCalledWith('event-uuid-1', undefined, 10, 0);
+      expect(service.findByEvent).toHaveBeenCalledWith(
+        'event-uuid-1',
+        undefined,
+        10,
+        0,
+      );
     });
 
     it('should filter registrations by status', async () => {
@@ -133,7 +151,9 @@ describe('RegistrationsController', () => {
         meta: { ...mockMeta, total: 0 },
       });
 
-      await controller.findByEvent('event-uuid-1', { status: RegistrationStatus.APPROVED });
+      await controller.findByEvent('event-uuid-1', {
+        status: RegistrationStatus.APPROVED,
+      });
 
       expect(service.findByEvent).toHaveBeenCalledWith(
         'event-uuid-1',
@@ -151,7 +171,12 @@ describe('RegistrationsController', () => {
 
       await controller.findByEvent('event-uuid-1', { limit: 5, offset: 10 });
 
-      expect(service.findByEvent).toHaveBeenCalledWith('event-uuid-1', undefined, 5, 10);
+      expect(service.findByEvent).toHaveBeenCalledWith(
+        'event-uuid-1',
+        undefined,
+        5,
+        10,
+      );
     });
   });
 
@@ -172,7 +197,9 @@ describe('RegistrationsController', () => {
         new NotFoundException('La inscripcion no fue encontrada'),
       );
 
-      await expect(controller.findOne('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(controller.findOne('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -180,7 +207,11 @@ describe('RegistrationsController', () => {
 
   describe('approve', () => {
     it('should approve a pending registration', async () => {
-      const approved = { ...mockRegistration, status: RegistrationStatus.APPROVED, resolvedAt: new Date() };
+      const approved = {
+        ...mockRegistration,
+        status: RegistrationStatus.APPROVED,
+        resolvedAt: new Date(),
+      };
       mockRegistrationsService.approve.mockResolvedValue(approved);
 
       const result = await controller.approve('reg-uuid-1', mockOrganizer);
@@ -195,7 +226,9 @@ describe('RegistrationsController', () => {
         new ForbiddenException('No eres el organizador de este evento'),
       );
 
-      await expect(controller.approve('reg-uuid-1', mockUser)).rejects.toThrow(ForbiddenException);
+      await expect(controller.approve('reg-uuid-1', mockUser)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
 
     it('should fail when event capacity is full', async () => {
@@ -203,7 +236,9 @@ describe('RegistrationsController', () => {
         new BadRequestException('El evento esta lleno'),
       );
 
-      await expect(controller.approve('reg-uuid-1', mockOrganizer)).rejects.toThrow(BadRequestException);
+      await expect(
+        controller.approve('reg-uuid-1', mockOrganizer),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -211,7 +246,11 @@ describe('RegistrationsController', () => {
 
   describe('reject', () => {
     it('should reject a pending registration', async () => {
-      const rejected = { ...mockRegistration, status: RegistrationStatus.REJECTED, resolvedAt: new Date() };
+      const rejected = {
+        ...mockRegistration,
+        status: RegistrationStatus.REJECTED,
+        resolvedAt: new Date(),
+      };
       mockRegistrationsService.reject.mockResolvedValue(rejected);
 
       const result = await controller.reject('reg-uuid-1', mockOrganizer);
@@ -225,7 +264,9 @@ describe('RegistrationsController', () => {
         new ForbiddenException('No eres el organizador de este evento'),
       );
 
-      await expect(controller.reject('reg-uuid-1', mockUser)).rejects.toThrow(ForbiddenException);
+      await expect(controller.reject('reg-uuid-1', mockUser)).rejects.toThrow(
+        ForbiddenException,
+      );
     });
   });
 
@@ -233,7 +274,10 @@ describe('RegistrationsController', () => {
 
   describe('cancel', () => {
     it('should allow user to cancel their own registration', async () => {
-      const cancelled = { ...mockRegistration, status: RegistrationStatus.CANCELLED };
+      const cancelled = {
+        ...mockRegistration,
+        status: RegistrationStatus.CANCELLED,
+      };
       mockRegistrationsService.cancel.mockResolvedValue(cancelled);
 
       const result = await controller.cancel('reg-uuid-1', mockUser);
@@ -257,7 +301,9 @@ describe('RegistrationsController', () => {
         new BadRequestException('La inscripcion ya esta cancelada'),
       );
 
-      await expect(controller.cancel('reg-uuid-1', mockUser)).rejects.toThrow(BadRequestException);
+      await expect(controller.cancel('reg-uuid-1', mockUser)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
@@ -265,11 +311,15 @@ describe('RegistrationsController', () => {
 
   describe('remove', () => {
     it('should soft-delete a registration', async () => {
-      mockRegistrationsService.remove.mockResolvedValue({ message: 'La inscripcion fue eliminada exitosamente' });
+      mockRegistrationsService.remove.mockResolvedValue({
+        message: 'La inscripcion fue eliminada exitosamente',
+      });
 
       const result = await controller.remove('reg-uuid-1', mockUser);
 
-      expect(result).toEqual({ message: 'La inscripcion fue eliminada exitosamente' });
+      expect(result).toEqual({
+        message: 'La inscripcion fue eliminada exitosamente',
+      });
       expect(service.remove).toHaveBeenCalledWith('reg-uuid-1', mockUser);
     });
   });

@@ -1,11 +1,20 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Event } from '../entities/event.entity';
 import { EventRegistration } from '../entities/event-registration.entity';
 import { EventsValidator } from '../../business/repositories/events.validator';
 import { IEvent } from '../../business/entities';
-import { AccessMode, EventStatus, RegistrationStatus } from '../../../../shared/enums';
+import {
+  AccessMode,
+  EventStatus,
+  RegistrationStatus,
+} from '../../../../shared/enums';
 
 @Injectable()
 export class EventsValidatorImpl implements EventsValidator {
@@ -17,13 +26,18 @@ export class EventsValidatorImpl implements EventsValidator {
     private readonly registrationRepo: Repository<EventRegistration>,
   ) {}
 
-  async validateOrganizer(eventId: string, organizerId: string): Promise<boolean> {
+  async validateOrganizer(
+    eventId: string,
+    organizerId: string,
+  ): Promise<boolean> {
     const event = await this.eventRepo.findOne({
       where: { id: eventId, isDeleted: false },
     });
     if (!event) throw new NotFoundException('El evento no fue encontrado');
     if (event.organizerId !== organizerId) {
-      throw new ForbiddenException('No tienes permisos para modificar este evento');
+      throw new ForbiddenException(
+        'No tienes permisos para modificar este evento',
+      );
     }
 
     return true;
@@ -41,7 +55,9 @@ export class EventsValidatorImpl implements EventsValidator {
 
     if (approvedCount >= event.capacity) {
       if (!event.waitlistEnabled) {
-        throw new BadRequestException('El evento ha alcanzado su capacidad máxima');
+        throw new BadRequestException(
+          'El evento ha alcanzado su capacidad máxima',
+        );
       }
     }
 
@@ -52,10 +68,14 @@ export class EventsValidatorImpl implements EventsValidator {
     const now = new Date();
 
     if (startsAt <= now) {
-      throw new BadRequestException('La fecha de inicio debe ser posterior a la fecha actual');
+      throw new BadRequestException(
+        'La fecha de inicio debe ser posterior a la fecha actual',
+      );
     }
     if (endsAt <= startsAt) {
-      throw new BadRequestException('La fecha de fin debe ser posterior a la fecha de inicio');
+      throw new BadRequestException(
+        'La fecha de fin debe ser posterior a la fecha de inicio',
+      );
     }
 
     return true;
@@ -88,10 +108,14 @@ export class EventsValidatorImpl implements EventsValidator {
   validatePriceForPaidEvent(event: Partial<IEvent>): boolean {
     if (event.accessMode === AccessMode.PAID) {
       if (!event.price || event.price <= 0) {
-        throw new BadRequestException('Un evento de pago debe tener un precio mayor a 0');
+        throw new BadRequestException(
+          'Un evento de pago debe tener un precio mayor a 0',
+        );
       }
       if (!event.currency) {
-        throw new BadRequestException('Un evento de pago debe especificar la moneda');
+        throw new BadRequestException(
+          'Un evento de pago debe especificar la moneda',
+        );
       }
     }
 

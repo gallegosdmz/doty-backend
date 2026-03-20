@@ -1,8 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { EventsController } from './events.controller';
 import { EventsService } from '../../business/services/events.service';
-import { AccessMode, AdmissionType, EventStatus, EventType } from '../../../../shared/enums';
+import {
+  AccessMode,
+  AdmissionType,
+  EventStatus,
+  EventType,
+} from '../../../../shared/enums';
 import { IEvent } from '../../business/entities';
 import { IUser } from '../../../users/business/entities';
 
@@ -28,7 +37,7 @@ describe('EventsController', () => {
     price: 100,
     currency: 'MXN',
     latitude: 19.4326077,
-    longitude: -99.1332080,
+    longitude: -99.133208,
     address: 'Cancha deportiva CDMX',
     capacity: 14,
     waitlistEnabled: false,
@@ -55,9 +64,7 @@ describe('EventsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [EventsController],
-      providers: [
-        { provide: EventsService, useValue: mockEventsService },
-      ],
+      providers: [{ provide: EventsService, useValue: mockEventsService }],
     }).compile();
 
     controller = module.get<EventsController>(EventsController);
@@ -86,7 +93,7 @@ describe('EventsController', () => {
         price: 100,
         currency: 'MXN',
         latitude: 19.4326077,
-        longitude: -99.1332080,
+        longitude: -99.133208,
         address: 'Cancha deportiva CDMX',
         capacity: 14,
         startsAt: '2026-04-01T10:00:00Z',
@@ -108,7 +115,9 @@ describe('EventsController', () => {
 
     it('should propagate service error when validation fails', async () => {
       mockEventsService.create.mockRejectedValue(
-        new BadRequestException('La fecha de inicio debe ser anterior a la fecha de fin'),
+        new BadRequestException(
+          'La fecha de inicio debe ser anterior a la fecha de fin',
+        ),
       );
 
       await expect(
@@ -135,7 +144,10 @@ describe('EventsController', () => {
 
   describe('findAll', () => {
     it('should return paginated events with default pagination', async () => {
-      mockEventsService.findAll.mockResolvedValue({ events: [mockEvent], meta: mockMeta });
+      mockEventsService.findAll.mockResolvedValue({
+        events: [mockEvent],
+        meta: mockMeta,
+      });
 
       const result = await controller.findAll({});
 
@@ -148,7 +160,10 @@ describe('EventsController', () => {
     });
 
     it('should pass filters including type and date range', async () => {
-      mockEventsService.findAll.mockResolvedValue({ events: [], meta: { ...mockMeta, total: 0 } });
+      mockEventsService.findAll.mockResolvedValue({
+        events: [],
+        meta: { ...mockMeta, total: 0 },
+      });
 
       await controller.findAll({
         type: EventType.SOCIAL,
@@ -170,7 +185,10 @@ describe('EventsController', () => {
     });
 
     it('should filter by price range', async () => {
-      mockEventsService.findAll.mockResolvedValue({ events: [], meta: { ...mockMeta, total: 0 } });
+      mockEventsService.findAll.mockResolvedValue({
+        events: [],
+        meta: { ...mockMeta, total: 0 },
+      });
 
       await controller.findAll({ minPrice: 50, maxPrice: 200 });
 
@@ -182,7 +200,10 @@ describe('EventsController', () => {
     });
 
     it('should pass search text filter', async () => {
-      mockEventsService.findAll.mockResolvedValue({ events: [], meta: { ...mockMeta, total: 0 } });
+      mockEventsService.findAll.mockResolvedValue({
+        events: [],
+        meta: { ...mockMeta, total: 0 },
+      });
 
       await controller.findAll({ search: 'futbol' });
 
@@ -198,7 +219,10 @@ describe('EventsController', () => {
 
   describe('findNearby', () => {
     it('should search nearby events with coordinates and default radius', async () => {
-      mockEventsService.findNearby.mockResolvedValue({ events: [mockEvent], meta: mockMeta });
+      mockEventsService.findNearby.mockResolvedValue({
+        events: [mockEvent],
+        meta: mockMeta,
+      });
 
       const result = await controller.findNearby({
         latitude: 19.43,
@@ -217,7 +241,10 @@ describe('EventsController', () => {
     });
 
     it('should pass custom radius and filters', async () => {
-      mockEventsService.findNearby.mockResolvedValue({ events: [], meta: { ...mockMeta, total: 0 } });
+      mockEventsService.findNearby.mockResolvedValue({
+        events: [],
+        meta: { ...mockMeta, total: 0 },
+      });
 
       await controller.findNearby({
         latitude: 19.43,
@@ -243,20 +270,34 @@ describe('EventsController', () => {
 
   describe('findMyEvents', () => {
     it('should return events organized by the authenticated user', async () => {
-      mockEventsService.findByOrganizer.mockResolvedValue({ events: [mockEvent], meta: mockMeta });
+      mockEventsService.findByOrganizer.mockResolvedValue({
+        events: [mockEvent],
+        meta: mockMeta,
+      });
 
       const result = await controller.findMyEvents(mockUser, {});
 
       expect(result).toEqual({ events: [mockEvent], meta: mockMeta });
-      expect(service.findByOrganizer).toHaveBeenCalledWith('user-uuid-1', 10, 0);
+      expect(service.findByOrganizer).toHaveBeenCalledWith(
+        'user-uuid-1',
+        10,
+        0,
+      );
     });
 
     it('should respect custom pagination', async () => {
-      mockEventsService.findByOrganizer.mockResolvedValue({ events: [], meta: { ...mockMeta, total: 0 } });
+      mockEventsService.findByOrganizer.mockResolvedValue({
+        events: [],
+        meta: { ...mockMeta, total: 0 },
+      });
 
       await controller.findMyEvents(mockUser, { limit: 5, offset: 10 });
 
-      expect(service.findByOrganizer).toHaveBeenCalledWith('user-uuid-1', 5, 10);
+      expect(service.findByOrganizer).toHaveBeenCalledWith(
+        'user-uuid-1',
+        5,
+        10,
+      );
     });
   });
 
@@ -273,9 +314,13 @@ describe('EventsController', () => {
     });
 
     it('should throw NotFoundException when event does not exist', async () => {
-      mockEventsService.findOne.mockRejectedValue(new NotFoundException('El evento no fue encontrado'));
+      mockEventsService.findOne.mockRejectedValue(
+        new NotFoundException('El evento no fue encontrado'),
+      );
 
-      await expect(controller.findOne('non-existent-uuid')).rejects.toThrow(NotFoundException);
+      await expect(controller.findOne('non-existent-uuid')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -288,7 +333,11 @@ describe('EventsController', () => {
 
       const result = await controller.update(
         'event-uuid-1',
-        { title: 'Partido actualizado', startsAt: '2026-05-01T10:00:00Z', endsAt: '2026-05-01T12:00:00Z' } as any,
+        {
+          title: 'Partido actualizado',
+          startsAt: '2026-05-01T10:00:00Z',
+          endsAt: '2026-05-01T12:00:00Z',
+        } as any,
         mockUser,
       );
 
@@ -310,14 +359,24 @@ describe('EventsController', () => {
       );
 
       await expect(
-        controller.update('event-uuid-1', { title: 'Hack' } as any, { ...mockUser, id: 'other-user' }),
+        controller.update('event-uuid-1', { title: 'Hack' } as any, {
+          ...mockUser,
+          id: 'other-user',
+        }),
       ).rejects.toThrow(ForbiddenException);
     });
 
     it('should handle partial updates without dates', async () => {
-      mockEventsService.update.mockResolvedValue({ ...mockEvent, capacity: 20 });
+      mockEventsService.update.mockResolvedValue({
+        ...mockEvent,
+        capacity: 20,
+      });
 
-      await controller.update('event-uuid-1', { capacity: 20 } as any, mockUser);
+      await controller.update(
+        'event-uuid-1',
+        { capacity: 20 } as any,
+        mockUser,
+      );
 
       expect(service.update).toHaveBeenCalledWith(
         'event-uuid-1',
@@ -349,7 +408,9 @@ describe('EventsController', () => {
         new BadRequestException('El evento esta cancelado'),
       );
 
-      await expect(controller.publish('event-uuid-1', mockUser)).rejects.toThrow(BadRequestException);
+      await expect(
+        controller.publish('event-uuid-1', mockUser),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -395,7 +456,9 @@ describe('EventsController', () => {
         new BadRequestException('El evento no esta publicado'),
       );
 
-      await expect(controller.complete('event-uuid-1', mockUser)).rejects.toThrow(BadRequestException);
+      await expect(
+        controller.complete('event-uuid-1', mockUser),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -403,11 +466,15 @@ describe('EventsController', () => {
 
   describe('remove', () => {
     it('should soft-delete an event', async () => {
-      mockEventsService.remove.mockResolvedValue({ message: 'El evento fue eliminado exitosamente' });
+      mockEventsService.remove.mockResolvedValue({
+        message: 'El evento fue eliminado exitosamente',
+      });
 
       const result = await controller.remove('event-uuid-1', mockUser);
 
-      expect(result).toEqual({ message: 'El evento fue eliminado exitosamente' });
+      expect(result).toEqual({
+        message: 'El evento fue eliminado exitosamente',
+      });
       expect(service.remove).toHaveBeenCalledWith('event-uuid-1', mockUser);
     });
 

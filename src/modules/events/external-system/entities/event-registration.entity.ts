@@ -27,7 +27,11 @@ export class EventRegistration {
   @Column('uuid')
   userId: string;
 
-  @Column({ type: 'enum', enum: RegistrationStatus, default: RegistrationStatus.PENDING })
+  @Column({
+    type: 'enum',
+    enum: RegistrationStatus,
+    default: RegistrationStatus.PENDING,
+  })
   status: RegistrationStatus;
 
   @CreateDateColumn()
@@ -42,7 +46,9 @@ export class EventRegistration {
   @Column({ default: false })
   isDeleted: boolean;
 
-  @ManyToOne(() => Event, (event) => event.registrations, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Event, (event) => event.registrations, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'eventId' })
   event: Event;
 

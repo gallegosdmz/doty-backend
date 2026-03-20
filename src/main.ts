@@ -28,7 +28,9 @@ async function bootstrap() {
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Liga+ API')
-    .setDescription('API de Liga+ - Marketplace de Eventos Sociales y Deportivos')
+    .setDescription(
+      'API de Liga+ - Marketplace de Eventos Sociales y Deportivos',
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -37,7 +39,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   const port = configService.get<number>('PORT') || 3000;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 
   Logger.log(`Liga+ API corriendo en puerto ${port}`, 'Bootstrap');
 }
